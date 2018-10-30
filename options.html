@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    td {
+      padding-top: 6px;
+    }
+    td:first-child {
+      text-align: right;
+      padding-right: 12px;
+    }
+    input[type=range] {
+      width: 90px;
+      height: 6px;
+    }
+    button {
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tbody>
+      <tr>
+        <td><label for="voice">Voice</label></td>
+        <td>
+          <select id="voice">
+            <option value="">&lt;default&gt;</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Interval</td>
+        <td>
+          <input type="range" name="" id="interval" min="0" max="3">
+          <span id="intervalValue"></span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="speakTest">Speak test</button>
+
+  <script src="options.js"></script>
+</body>
+</html>

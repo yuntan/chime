@@ -6,6 +6,7 @@
     "scripts": ["background.js"],
     "persistent": false
   },
-  "permissions": ["alarms"],
+  "permissions": ["alarms", "storage"],
+  "options_page": "options.html",
   "manifest_version": 2
 }

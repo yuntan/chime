@@ -2,6 +2,8 @@
 
 chrome.runtime.onInstalled.addListener(function() {
   console.log('onInstalled');
+
+  chrome.storage.local.set({ voiceName: '', interval: 15 });
 });
 
 function chime() {
@@ -45,4 +47,8 @@ setAlarm();
 chrome.alarms.onAlarm.addListener(alarm => {
   chime();
   setAlarm();
+});
+
+chrome.runtime.onMessage.addListener(msg => {
+  if (msg === 'chime') chime();
 });
