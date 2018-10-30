@@ -43,15 +43,18 @@ function genSpeechText(lang) {
 }
 
 function setAlarm() {
-  const now = new Date();
-  const min = now.getMinutes(), sec = now.getSeconds();
-  const delaySec = (15 - (min % 15) - 1) * 60 + (60 - sec);
-  // const delaySec = 60 - sec; // for debug
-  console.log(`setAlarm: delay ${delaySec} sec`);
-  const when = Date.now() + delaySec * 1000
+  chrome.storage.local.get(['interval'], items => {
+    const { interval } = items;
+    const now = new Date();
+    const min = now.getMinutes(), sec = now.getSeconds();
+    const delaySec = (interval - (min % interval) - 1) * 60 + (60 - sec);
+    // const delaySec = 60 - sec; // for debug
+    console.log(`setAlarm: delay ${delaySec} sec`);
+    const when = Date.now() + delaySec * 1000
 
-  // https://developer.chrome.com/extensions/alarms
-  chrome.alarms.create('chime', { when })
+    // https://developer.chrome.com/extensions/alarms
+    chrome.alarms.create('chime', { when })
+  });
 }
 
 const synth = window.speechSynthesis;
