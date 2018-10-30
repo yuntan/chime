@@ -7,27 +7,39 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 function chime() {
-  const lang = 'en-US';
-  const text = genSpeechText(lang);
+  chrome.storage.local.get(['voiceName'], items => {
+    const { voiceName } = items;
+    const voice = voiceName ? voices.find(voice => voice.name === voiceName) : null;
+    const text = genSpeechText(voice ? voice.lang : chrome.i18n.getUILanguage());
 
-  const synth = window.speechSynthesis;
-  const utter = new SpeechSynthesisUtterance();
-  utter.text = text;
-  utter.lang = lang;
-  utter.rate = .8;
-  synth.speak(utter);
+    const utter = new SpeechSynthesisUtterance();
+    utter.text = text;
+    utter.voice = voice;
+    utter.rate = .8;
+    synth.speak(utter);
+  });
 }
 
 function genSpeechText(lang) {
   const now = new Date();
   const hour = now.getHours(), min = now.getMinutes();
 
-  // TODO: lang
-  if (min === 0) return `${hour} o'clock`;
-  else if (min === 15) return `quarter past ${hour}`;
-  else if (min === 30) return `half past ${hour}`;
-  else if (min === 45) return `quarter to ${hour + 1}`;
-  else return `${hour}:${min < 10 ? `0${min}` : min}`;
+  if (/^en/.test(lang)) { // English
+    if (hour === 0 && min === 0) return 'midnight';
+    else if (hour === 12 && min === 0) return 'noon';
+    else if (min === 0) return `${hour} o'clock`;
+    else if (min === 15) return `quarter past ${hour}`;
+    else if (min === 30) return `half past ${hour}`;
+    else if (min === 45) return `quarter to ${hour + 1}`;
+    else return `${hour}:${min < 10 ? `0${min}` : min}`;
+  } else if (/^ja/.test(lang)) { // Japanese
+    if (hour === 12 && min === 0) return '正午';
+    else if (min === 0) return `${hour}時`;
+    else if (min === 30) return `${hour}時半`;
+    else return `${hour}時${min}分`;
+  } else {
+    return `${hour}:${min < 10 ? `0${min}` : min}`;
+  }
 }
 
 function setAlarm() {
@@ -40,6 +52,14 @@ function setAlarm() {
 
   // https://developer.chrome.com/extensions/alarms
   chrome.alarms.create('chime', { when })
+}
+
+const synth = window.speechSynthesis;
+let voices = synth.getVoices();
+if (synth.onvoiceschanged !== undefined) {
+  synth.addEventListener('voiceschanged', () => {
+    voices = synth.getVoices();
+  });
 }
 
 setAlarm();
