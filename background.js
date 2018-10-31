@@ -3,7 +3,10 @@
 chrome.runtime.onInstalled.addListener(function() {
   console.log('onInstalled');
 
-  chrome.storage.local.set({ voiceName: '', interval: 15 });
+  chrome.storage.local.get(['voiceName'], items => {
+    if (items.voiceName !== undefined) return;
+    chrome.storage.local.set({ voiceName: '', interval: 15 });
+  });
 });
 
 function chime() {
