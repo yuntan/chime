@@ -55,7 +55,7 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 }
 
 voiceSelect.addEventListener('change', updateOptions);
-intervalInput.addEventListener('change', () => {
+intervalInput.addEventListener('input', () => {
   const interval = intervals[intervalInput.value];
   intervalValue.innerText = `${interval} mins`;
   updateOptions();
