@@ -13,10 +13,10 @@
     "open_in_tab": false
   },
   "icons": {
-    "16": "icon-16x16.png",
-    "32": "icon-32x32.png",
-    "48": "icon-48x48.png",
-    "128": "icon-128x128.png"
+    "16": "icons/16x16.png",
+    "32": "icons/32x32.png",
+    "48": "icons/48x48.png",
+    "128": "icons/128x128.png"
   },
   "manifest_version": 2
 }
