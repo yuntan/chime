@@ -47,7 +47,8 @@ function genSpeechText(lang) {
 
 function setAlarm() {
   chrome.storage.local.get(['interval'], items => {
-    const { interval } = items;
+    let { interval } = items;
+    if (!interval) interval = 15;
     const now = new Date();
     const min = now.getMinutes(), sec = now.getSeconds();
     const delaySec = (interval - (min % interval) - 1) * 60 + (60 - sec);
