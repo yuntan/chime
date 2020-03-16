@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/yuntan/chime/issues"
   },
-  "homepage": "https://github.com/yuntan/chime#readme"
+  "homepage": "https://github.com/yuntan/chime#readme",
+  "devDependencies": {
+    "webextension-polyfill": "^0.6.0"
+  }
 }

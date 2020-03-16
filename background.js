@@ -1,17 +1,19 @@
 'use strict';
 
-function chime() {
-  chrome.storage.local.get(['voiceName'], items => {
-    const { voiceName } = items;
-    const voice = voiceName ? voices.find(voice => voice.name === voiceName) : null;
-    const text = genSpeechText(voice ? voice.lang : chrome.i18n.getUILanguage());
+async function chime() {
+  const { voiceName } = await browser.storage.local.get(['voiceName']);
+  const synth = window.speechSynthesis;
+  const voices = synth.getVoices();
+  const voice =
+    voiceName ? voices.find(voice => voice.name === voiceName) : null;
+  const text = genSpeechText(voice ? voice.lang : browser.i18n.getUILanguage());
 
-    const utter = new SpeechSynthesisUtterance();
-    utter.text = text;
-    utter.voice = voice;
-    utter.rate = .8;
-    synth.speak(utter);
-  });
+  const utter = new SpeechSynthesisUtterance();
+  utter.text = text;
+  utter.voice = voice;
+  utter.rate = .8;
+
+  synth.speak(utter);
 }
 
 function genSpeechText(lang) {
@@ -36,39 +38,38 @@ function genSpeechText(lang) {
   }
 }
 
-function setAlarm() {
-  chrome.alarms.clear();
+async function setAlarm() {
+  browser.alarms.clear();
 
-  chrome.storage.local.get(['interval'], items => {
-    let { interval } = items;
-    if (!interval) interval = 15;
-    const now = new Date();
-    const min = now.getMinutes(), sec = now.getSeconds();
-    const delaySec = (interval - (min % interval) - 1) * 60 + (60 - sec);
-    // const delaySec = 60 - sec; // for debug
-    console.log(`setAlarm: delay ${delaySec} sec`);
-    const when = Date.now() + delaySec * 1000
+  let { interval } = await browser.storage.local.get(['interval']);
+  if (!interval) interval = 15;
+  const now = new Date();
+  const min = now.getMinutes(), sec = now.getSeconds();
+  const delaySec = (interval - (min % interval) - 1) * 60 + (60 - sec);
+  // const delaySec = 60 - sec; // for debug
+  console.log(`setAlarm: delay ${delaySec} sec`);
+  const when = Date.now() + delaySec * 1000
 
-    // https://developer.chrome.com/extensions/alarms
-    chrome.alarms.create({ when })
-  });
+  // https://developer.chrome.com/extensions/alarms
+  browser.alarms.create({ when })
 }
 
-chrome.runtime.onInstalled.addListener(function() {
+browser.runtime.onInstalled.addListener(async () => {
   console.log('onInstalled');
 
-  chrome.storage.local.get(['voiceName'], items => {
-    if (items.voiceName !== undefined) return;
-    chrome.storage.local.set({ voiceName: '', interval: 15 });
-  });
+  await { voiceName } = browser.storage.local.get(['voiceName']);
+  if (voiceName !== undefined) return;
+  browser.storage.local.set({ voiceName: '', interval: 15 });
 });
 
-chrome.alarms.onAlarm.addListener(alarm => {
+browser.alarms.onAlarm.addListener(alarm => {
+  console.log('onAlarm');
+
   chime();
   setAlarm();
 });
 
-chrome.runtime.onMessage.addListener(msg => {
+browser.runtime.onMessage.addListener(msg => {
   switch (msg) {
     case 'setAlarm':
       setAlarm();
@@ -78,13 +79,5 @@ chrome.runtime.onMessage.addListener(msg => {
       break;
   }
 });
-
-const synth = window.speechSynthesis;
-let voices = synth.getVoices();
-if (synth.onvoiceschanged !== undefined) {
-  synth.addEventListener('voiceschanged', () => {
-    voices = synth.getVoices();
-  });
-}
 
 setAlarm();

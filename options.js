@@ -22,28 +22,32 @@ function populateVoiceSelect() {
   }
 }
 
-function restoreOptions() {
-  chrome.storage.local.get(['voiceName', 'interval'], items => {
-    const {voiceName, interval} = items;
-    if (voiceName === '') {
-      voiceSelect.selectedIndex = 0;
-    } else {
-      voiceSelect.selectedIndex = voices.map(voice => voice.name).indexOf(voiceName) + 1;
-    }
-    intervalInput.value = intervals.indexOf(interval);
-    intervalValue.innerText = `${interval} mins`;
-  });
+function intervalText(interval) {
+  return interval < 60 ? `${interval} mins` : `1 hour`;
+}
+
+async function restoreOptions() {
+  const { voiceName, interval } =
+    await browser.storage.local.get(['voiceName', 'interval']);
+  if (voiceName === '') {
+    voiceSelect.selectedIndex = 0;
+  } else {
+    voiceSelect.selectedIndex =
+      voices.map(voice => voice.name).indexOf(voiceName) + 1;
+  }
+  intervalInput.value = intervals.indexOf(interval);
+  intervalValue.innerText = intervalText(interval);
 }
 
 function updateOptions() {
   const voiceName = voiceSelect.selectedOptions[0].value,
     interval = intervals[intervalInput.value];
-  chrome.storage.local.set({ voiceName, interval });
-  chrome.runtime.sendMessage('', 'setAlarm');
+  browser.storage.local.set({ voiceName, interval });
+  browser.runtime.sendMessage('', 'setAlarm');
 }
 
 function chime() {
-  chrome.runtime.sendMessage('', 'chime');
+  browser.runtime.sendMessage('', 'chime');
 }
 
 populateVoiceSelect();
@@ -58,7 +62,7 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 voiceSelect.addEventListener('change', updateOptions);
 intervalInput.addEventListener('input', () => {
   const interval = intervals[intervalInput.value];
-  intervalValue.innerText = interval < 60 ? `${interval} mins` : `1 hour`;
+  intervalValue.innerText = intervalText(interval);
   updateOptions();
 });
 speakTestBtn.addEventListener('click', chime);
