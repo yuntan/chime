@@ -3,12 +3,16 @@
 const IDLE_DETECTION_INTERVAL = 5 * 60; // secs
 
 async function chime() {
-  const { voiceName } = await browser.storage.local.get(['voiceName']);
+  const { voiceName, use12Hours } =
+    await browser.storage.local.get(['voiceName', 'use12Hours']);
   const synth = window.speechSynthesis;
   const voices = synth.getVoices();
   const voice =
     voiceName ? voices.find(voice => voice.name === voiceName) : null;
-  const text = genSpeechText(voice ? voice.lang : browser.i18n.getUILanguage());
+  const text = genSpeechText(
+    voice ? voice.lang : browser.i18n.getUILanguage(),
+    use12Hours
+  );
 
   const utter = new SpeechSynthesisUtterance();
   utter.text = text;
@@ -18,25 +22,45 @@ async function chime() {
   synth.speak(utter);
 }
 
-function genSpeechText(lang) {
+function genSpeechText(lang, use12Hours) {
   const now = new Date();
-  const hour = now.getHours(), min = now.getMinutes();
+  const
+    hours = now.getHours(),
+    mins = now.getMinutes();
 
   if (/^en/.test(lang)) { // English
-    if (hour === 0 && min === 0) return 'midnight';
-    else if (hour === 12 && min === 0) return 'noon';
-    else if (min === 0) return `${hour} o'clock`;
-    else if (min === 15) return `quarter past ${hour}`;
-    else if (min === 30) return `half past ${hour}`;
-    else if (min === 45) return `quarter to ${hour + 1}`;
-    else return `${hour}:${min < 10 ? `0${min}` : min}`;
+    const
+      isMidnight = (hours === 0 && mins === 0),
+      isNoon = (hours === 12 && mins === 0);
+    const ampm = hours / 12 === 0 ? 'a.m.' : 'p.m.';
+    const hoursName = hours =>
+      (hours === 0 || hours === 24) ? 'midnight' :
+      (hours === 12) ? 'noon' :
+      use12Hours ? `${hours % 12} ${ampm}` :
+      hours;
+
+    if (isMidnight || isNoon) return hoursName(hours);
+    else if (mins === 0) return use12Hours ?
+      hoursName(hours) :
+      `${hours} o'clock`;
+    else if (mins === 15) return `quarter past ${hoursName(hours)}`;
+    else if (mins === 30) return `half past ${hoursName(hours)}`;
+    else if (mins === 45) return `quarter to ${hoursName(hours + 1)}`;
+    else return `${use12Hours ? hours % 12 : hours}:` +
+      `${mins < 10 ? `0${mins}` : mins} ${use12Hours ? ampm : ''}`;
+
   } else if (/^ja/.test(lang)) { // Japanese
-    if (hour === 12 && min === 0) return '正午';
-    else if (min === 0) return `${hour}時`;
-    else if (min === 30) return `${hour}時半`;
-    else return `${hour}時${min}分`;
+    const ampm = hours / 12 === 0 ? '午前' : '午後';
+    const hoursName =
+      use12Hours ? `${ampm}${hours % 12}時` : `${hours}時`
+
+    if (hours === 12 && mins === 0) return '正午';
+    else if (mins === 0) return hoursName;
+    else if (mins === 30) return `${hoursName}半`;
+    else return `${hoursName}${mins}分`;
+
   } else {
-    return `${hour}:${min < 10 ? `0${min}` : min}`;
+    return `${hours}:${mins < 10 ? `0${mins}` : mins}`;
   }
 }
 
