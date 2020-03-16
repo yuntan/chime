@@ -38,7 +38,7 @@ function restoreOptions() {
 function updateOptions() {
   const voiceName = voiceSelect.selectedOptions[0].value,
     interval = intervals[intervalInput.value];
-  chrome.storage.local.set({voiceName, interval});
+  chrome.storage.local.set({ voiceName, interval });
 }
 
 function chime() {
@@ -57,7 +57,7 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 voiceSelect.addEventListener('change', updateOptions);
 intervalInput.addEventListener('input', () => {
   const interval = intervals[intervalInput.value];
-  intervalValue.innerText = `${interval} mins`;
+  intervalValue.innerText = interval < 60 ? `${interval} mins` : `1 hour`;
   updateOptions();
 });
 speakTestBtn.addEventListener('click', chime);

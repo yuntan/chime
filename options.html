@@ -3,28 +3,38 @@
 <head>
   <meta charset="utf-8"/>
   <style>
+    table {
+      margin: 12px;
+    }
     td {
       padding-top: 6px;
     }
-    td:first-child {
+    .label {
       text-align: right;
       font-weight: bold;
       padding-right: 12px;
     }
+    option {
+      width: 150px;
+    }
     input[type=range] {
-      width: 90px;
+      width: 150px;
       height: 6px;
+      margin-right: 12px;
     }
     button {
-      margin-top: 24px;
+      width: 100%;
+      text-align: center;
     }
   </style>
+
+  <script src="options.js"></script>
 </head>
 <body>
   <table>
     <tbody>
       <tr>
-        <td><label for="voice">Voice</label></td>
+        <td class="label"><label for="voice">Voice</label></td>
         <td>
           <select id="voice">
             <option value="">&lt;default&gt;</option>
@@ -32,16 +42,18 @@
         </td>
       </tr>
       <tr>
-        <td>Interval</td>
+        <td class="label">Interval</td>
         <td>
           <input type="range" name="" id="interval" min="0" max="3">
           <span id="intervalValue"></span>
         </td>
       </tr>
+      <tr>
+        <td colspan="2">
+          <button id="speakTest">🔊 Speak test</button>
+        </td>
+      </tr>
     </tbody>
   </table>
-  <button id="speakTest">🔊 Speak test</button>
-
-  <script src="options.js"></script>
 </body>
 </html>

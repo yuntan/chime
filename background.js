@@ -1,14 +1,5 @@
 'use strict';
 
-chrome.runtime.onInstalled.addListener(function() {
-  console.log('onInstalled');
-
-  chrome.storage.local.get(['voiceName'], items => {
-    if (items.voiceName !== undefined) return;
-    chrome.storage.local.set({ voiceName: '', interval: 15 });
-  });
-});
-
 function chime() {
   chrome.storage.local.get(['voiceName'], items => {
     const { voiceName } = items;
@@ -57,9 +48,27 @@ function setAlarm() {
     const when = Date.now() + delaySec * 1000
 
     // https://developer.chrome.com/extensions/alarms
-    chrome.alarms.create('chime', { when })
+    chrome.alarms.create({ when })
   });
 }
+
+chrome.runtime.onInstalled.addListener(function() {
+  console.log('onInstalled');
+
+  chrome.storage.local.get(['voiceName'], items => {
+    if (items.voiceName !== undefined) return;
+    chrome.storage.local.set({ voiceName: '', interval: 15 });
+  });
+});
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  chime();
+  setAlarm();
+});
+
+chrome.runtime.onMessage.addListener(msg => {
+  if (msg === 'chime') chime();
+});
 
 const synth = window.speechSynthesis;
 let voices = synth.getVoices();
@@ -70,12 +79,3 @@ if (synth.onvoiceschanged !== undefined) {
 }
 
 setAlarm();
-
-chrome.alarms.onAlarm.addListener(alarm => {
-  chime();
-  setAlarm();
-});
-
-chrome.runtime.onMessage.addListener(msg => {
-  if (msg === 'chime') chime();
-});
