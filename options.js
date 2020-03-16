@@ -1,6 +1,6 @@
 'use strict';
 
-const intervals = [5, 15, 30, 60]; // mins
+const intervals = [5, 15, 20, 30, 60]; // mins
 
 const voiceSelect = document.getElementById('voice'),
   intervalInput = document.getElementById('interval'),
