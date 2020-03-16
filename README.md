@@ -19,12 +19,15 @@ Setup
 
 Open extension option page and select your favorite language (English or Japanese is recommended but works for the others).
 
+### Requirements for Firefox on Linux
+You need to install additional software to use text2speech feature of Firefox. for example,
+
+```
+sudo pacman -S speech-dispatcher festival festival-us
+yay -S festival-freebsoft-utils
+sudoedit /etc/speech-dispatcher/speechd.conf
+```
+
 Acknowledgement
 ---------------
 Mentalist season 6 episode 17 "Silver Wings of Time" and FBI analyst Jason Wylie.
-
-
-TODO
-----
-- Support 12 hours
-- make configurable (speak rate)
