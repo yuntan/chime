@@ -37,6 +37,8 @@ function genSpeechText(lang) {
 }
 
 function setAlarm() {
+  chrome.alarms.clear();
+
   chrome.storage.local.get(['interval'], items => {
     let { interval } = items;
     if (!interval) interval = 15;
@@ -67,7 +69,14 @@ chrome.alarms.onAlarm.addListener(alarm => {
 });
 
 chrome.runtime.onMessage.addListener(msg => {
-  if (msg === 'chime') chime();
+  switch (msg) {
+    case 'setAlarm':
+      setAlarm();
+      break;
+    case 'chime':
+      chime();
+      break;
+  }
 });
 
 const synth = window.speechSynthesis;

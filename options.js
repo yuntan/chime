@@ -39,6 +39,7 @@ function updateOptions() {
   const voiceName = voiceSelect.selectedOptions[0].value,
     interval = intervals[intervalInput.value];
   chrome.storage.local.set({ voiceName, interval });
+  chrome.runtime.sendMessage('', 'setAlarm');
 }
 
 function chime() {
