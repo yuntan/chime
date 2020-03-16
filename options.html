@@ -9,6 +9,9 @@
     td {
       padding-top: 6px;
     }
+    td * {
+      vertical-align: middle;
+    }
     .label {
       text-align: right;
       font-weight: bold;
@@ -34,7 +37,7 @@
   <table>
     <tbody>
       <tr>
-        <td class="label"><label for="voice">Voice</label></td>
+        <td class="label">Voice</td>
         <td>
           <select id="voice">
             <option value="">&lt;default&gt;</option>
@@ -46,6 +49,12 @@
         <td>
           <input type="range" name="" id="interval" min="0" max="4">
           <span id="intervalValue"></span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="checkbox" name="" id="silentWhenIdle">
+          <label for="silentWhenIdle">Silent when idle</label>
         </td>
       </tr>
       <tr>

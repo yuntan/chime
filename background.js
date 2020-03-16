@@ -1,5 +1,7 @@
 'use strict';
 
+const IDLE_DETECTION_INTERVAL = 5 * 60; // secs
+
 async function chime() {
   const { voiceName } = await browser.storage.local.get(['voiceName']);
   const synth = window.speechSynthesis;
@@ -57,19 +59,43 @@ async function setAlarm() {
 browser.runtime.onInstalled.addListener(async () => {
   console.log('onInstalled');
 
-  await { voiceName } = browser.storage.local.get(['voiceName']);
+  let { voiceName } = await browser.storage.local.get(['voiceName']);
   if (voiceName !== undefined) return;
-  browser.storage.local.set({ voiceName: '', interval: 15 });
+  browser.storage.local.set({
+    voiceName: '', interval: 15, silentWhenIdle: false
+  });
 });
 
-browser.alarms.onAlarm.addListener(alarm => {
+browser.alarms.onAlarm.addListener(async () => {
   console.log('onAlarm');
 
-  chime();
+  const { silentWhenIdle } =
+    await browser.storage.local.get(['silentWhenIdle']);
+
+  if (silentWhenIdle) {
+    chime();
+    return;
+  }
+
+  const state = await browser.idle.queryState(IDLE_DETECTION_INTERVAL);
+  switch (state) {
+    case 'case':
+      chime();
+      break;
+    case 'idle':
+    case 'locked':
+      console.log(`Alarm skipped (state: ${state})`);
+      break;
+    default:
+      throw new Error("assert not reached");
+  }
+
   setAlarm();
 });
 
 browser.runtime.onMessage.addListener(msg => {
+  console.log(`onMessage('${msg}')`);
+
   switch (msg) {
     case 'setAlarm':
       setAlarm();
@@ -77,6 +103,8 @@ browser.runtime.onMessage.addListener(msg => {
     case 'chime':
       chime();
       break;
+    default:
+      throw new Error("assert not reached");
   }
 });
 

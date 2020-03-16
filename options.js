@@ -2,9 +2,11 @@
 
 const intervals = [5, 15, 20, 30, 60]; // mins
 
-const voiceSelect = document.getElementById('voice'),
+const
+  voiceSelect = document.getElementById('voice'),
   intervalInput = document.getElementById('interval'),
   intervalValue = document.getElementById('intervalValue'),
+  idleInput = document.getElementById('silentWhenIdle'),
   speakTestBtn = document.getElementById('speakTest');
 
 const synth = window.speechSynthesis;
@@ -27,8 +29,8 @@ function intervalText(interval) {
 }
 
 async function restoreOptions() {
-  const { voiceName, interval } =
-    await browser.storage.local.get(['voiceName', 'interval']);
+  const { voiceName, interval, silentWhenIdle } =
+    await browser.storage.local.get(['voiceName', 'interval', 'silentWhenIdle']);
   if (voiceName === '') {
     voiceSelect.selectedIndex = 0;
   } else {
@@ -37,12 +39,15 @@ async function restoreOptions() {
   }
   intervalInput.value = intervals.indexOf(interval);
   intervalValue.innerText = intervalText(interval);
+  idleInput.checked = silentWhenIdle;
 }
 
 function updateOptions() {
-  const voiceName = voiceSelect.selectedOptions[0].value,
-    interval = intervals[intervalInput.value];
-  browser.storage.local.set({ voiceName, interval });
+  const
+    voiceName = voiceSelect.selectedOptions[0].value,
+    interval = intervals[intervalInput.value],
+    silentWhenIdle = idleInput.checked;
+  browser.storage.local.set({ voiceName, interval, silentWhenIdle });
   browser.runtime.sendMessage('', 'setAlarm');
 }
 
@@ -65,4 +70,5 @@ intervalInput.addEventListener('input', () => {
   intervalValue.innerText = intervalText(interval);
   updateOptions();
 });
+idleInput.addEventListener('change', updateOptions);
 speakTestBtn.addEventListener('click', chime);
