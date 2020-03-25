@@ -96,22 +96,11 @@ browser.alarms.onAlarm.addListener(async () => {
   const { silentWhenIdle } =
     await browser.storage.local.get(['silentWhenIdle']);
 
-  if (silentWhenIdle) {
-    chime();
-    return;
-  }
-
   const state = await browser.idle.queryState(IDLE_DETECTION_INTERVAL);
-  switch (state) {
-    case 'case':
-      chime();
-      break;
-    case 'idle':
-    case 'locked':
-      console.log(`Alarm skipped (state: ${state})`);
-      break;
-    default:
-      throw new Error("assert not reached");
+  if (!silentWhenIdle || state === 'active') {
+    chime();
+  } else {
+    console.log(`Alarm skipped (state: ${state})`);
   }
 
   setAlarm();
