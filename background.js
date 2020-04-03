@@ -121,4 +121,10 @@ browser.runtime.onMessage.addListener(msg => {
   }
 });
 
+browser.idle.onStateChanged.addListener(newState => {
+  console.log(`idle.onStateChanged: newState=${newState}`);
+
+  if (newState === 'active') setAlarm();
+});
+
 setAlarm();
