@@ -17,7 +17,14 @@ let voices;
 function populateVoiceSelect() {
   voices = synth.getVoices();
 
-  for (let voice of voices) {
+  voiceSelect.innerHTML = '';
+
+  const option = document.createElement('option');
+  option.textContent = '<default>';
+  option.value = '';
+  voiceSelect.appendChild(option);
+
+  for (const voice of  voices) {
     const option = document.createElement('option');
     option.textContent = `${voice.name} (${voice.lang})`;
     option.value = voice.name;
