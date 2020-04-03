@@ -1,6 +1,6 @@
 {
   "name": "chime",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Chime improves your time conciousness",
   "main": "background.js",
   "scripts": {
@@ -17,7 +17,10 @@
     "url": "https://github.com/yuntan/chime/issues"
   },
   "homepage": "https://github.com/yuntan/chime#readme",
-  "devDependencies": {
+  "dependencies": {
     "webextension-polyfill": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/firefox-webext-browser": "^70.0.1"
   }
 }
