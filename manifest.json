@@ -5,7 +5,7 @@
   "description": "Chime improves your time conciousness",
   "background": {
     "scripts": [
-      "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "background.js"
     ],
     "persistent": false
