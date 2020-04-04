@@ -1,8 +1,9 @@
 {
-  "name": "Chime",
-  "short_name": "Chime",
+  "name": "__MSG_appName__",
+  "short_name": "__MSG_appShortName__",
   "version": "0.2.3",
-  "description": "Chime improves your time conciousness",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
   "background": {
     "scripts": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",

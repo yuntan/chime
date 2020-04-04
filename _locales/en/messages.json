@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Chime",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "appShortName": {
+    "message": "Chime",
+    "description": "The short name of the application."
+  },
+  "appDesc": {
+    "message": "Chime improves your time conciousness", 
+    "description":"The description of the application, displayed in the web store."
+  }
+}
