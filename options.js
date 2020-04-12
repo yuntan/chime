@@ -3,8 +3,7 @@
 window.addEventListener('load', async () => {
   const intervals = [5, 15, 20, 30, 60]; // mins
 
-  const
-    voiceSelect = document.getElementById('voice'),
+  const voiceSelect = document.getElementById('voice'),
     intervalInput = document.getElementById('interval'),
     intervalValue = document.getElementById('intervalValue'),
     use12Input = document.getElementById('use12Hours'),
@@ -61,16 +60,15 @@ window.addEventListener('load', async () => {
     idleInput.checked = silentWhenIdle;
   }
 
-  function updateOptions() {
-    const
-    voiceName = voiceSelect.selectedOptions[0].value,
+  async function updateOptions() {
+    const voiceName = voiceSelect.selectedOptions[0].value,
       interval = intervals[intervalInput.value],
       use12Hours = use12Input.checked,
       silentWhenIdle = idleInput.checked;
-    browser.storage.local.set({
+    await browser.storage.local.set({
       voiceName, interval, use12Hours, silentWhenIdle,
     });
-    browser.runtime.sendMessage('', 'setAlarm');
+    await browser.runtime.sendMessage('', 'setAlarm');
   }
 
   function chime() {

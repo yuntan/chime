@@ -83,24 +83,34 @@ async function setAlarm() {
 browser.runtime.onInstalled.addListener(async () => {
   console.log('onInstalled');
 
-  let { voiceName } = await browser.storage.local.get(['voiceName']);
-  if (voiceName !== undefined) return;
-  browser.storage.local.set({
-    voiceName: '', interval: 15, silentWhenIdle: false
-  });
+  // initialize local storage
+  let { voiceName } = await browser.storage.local.get();
+  if (voiceName === undefined)
+    await browser.storage.local.set({
+      voiceName: '',
+      interval: 15,
+      use12Hours: false,
+      silentWhenIdle: false,
+    });
+
+  // set badge
+  await browser.storage.local.set({ enabled: true });
+  await browser.browserAction.setBadgeText({ text: 'ON' });
+  await browser.browserAction.setBadgeBackgroundColor({ color: '#4984f4' })
+
+  await setAlarm();
 });
 
 browser.alarms.onAlarm.addListener(async () => {
   console.log('onAlarm');
 
-  const { silentWhenIdle } =
-    await browser.storage.local.get(['silentWhenIdle']);
+  const { enabled, silentWhenIdle } = await browser.storage.local.get();
 
   const state = await browser.idle.queryState(IDLE_DETECTION_INTERVAL);
-  if (!silentWhenIdle || state === 'active') {
+  if (enabled && (!silentWhenIdle || state === 'active')) {
     chime();
   } else {
-    console.log(`Alarm skipped (state: ${state})`);
+    console.log(`Alarm skipped (enabled: ${enabled}, state: ${state})`);
   }
 
   setAlarm();
@@ -127,4 +137,17 @@ browser.idle.onStateChanged.addListener(newState => {
   if (newState === 'active') setAlarm();
 });
 
-setAlarm();
+browser.browserAction.onClicked.addListener(async () => {
+  let { enabled } = await browser.storage.local.get();
+
+  if (enabled) {
+    await browser.browserAction.setBadgeText({ text: 'OFF' });
+    await browser.browserAction.setBadgeBackgroundColor({ color: '#333333' })
+  } else {
+    await browser.browserAction.setBadgeText({ text: 'ON' });
+    await browser.browserAction.setBadgeBackgroundColor({ color: '#4984f4' })
+  }
+
+  enabled = !enabled;
+  await browser.storage.local.set({ enabled });
+});
