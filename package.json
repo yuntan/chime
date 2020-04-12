@@ -1,6 +1,6 @@
 {
   "name": "chime",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Chime improves your time conciousness",
   "main": "background.js",
   "scripts": {
