@@ -1,5 +1,6 @@
 import assert from 'assert';
-import speechText from '../speechtext.mjs';
+
+import speechText from '../src/speechtext.mjs';
 
 describe('speechText', () => {
   it("should return 'midnight' at 00:00", () => {
@@ -117,6 +118,11 @@ describe('speechText', () => {
     assert.equal(speechText('ja-JP', true, date), '午前0時半');
   });
 
+  it("should return '午前1時' at 01:00", () => {
+    const date = new Date('2020-01-01T01:00:00');
+    assert.equal(speechText('ja-JP', true, date), '午前1時');
+  });
+
   it("should return '正午' at 12:00", () => {
     const date = new Date('2020-01-01T12:00:00');
     assert.equal(speechText('ja-JP', true, date), '正午');
@@ -127,13 +133,18 @@ describe('speechText', () => {
     assert.equal(speechText('ja-JP', true, date), '午後0時半');
   });
 
-  it("should return '00:00' at 00:00", () => {
-    const date = new Date('2020-01-01T00:00:00');
-    assert.equal(speechText('ch-ZN', false, date), '00:00');
+  it("should return '午後1時' at 13:00", () => {
+    const date = new Date('2020-01-01T13:00:00');
+    assert.equal(speechText('ja-JP', true, date), '午後1時');
   });
 
   it("should return '00:00' at 00:00", () => {
     const date = new Date('2020-01-01T00:00:00');
-    assert.equal(speechText('ch-ZN', true, date), '00:00');
+    assert.equal(speechText('zn-CH', false, date), '00:00');
+  });
+
+  it("should return '00:00' at 00:00", () => {
+    const date = new Date('2020-01-01T00:00:00');
+    assert.equal(speechText('zn-CH', true, date), '00:00');
   });
 });

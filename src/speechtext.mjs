@@ -25,7 +25,7 @@ export default function speechText(lang, use12Hours, now = new Date()) {
       `${padding(mins, 2)} ${use12Hours ? ampm(hours) : ''}`.trim();
 
   } else if (/^ja/.test(lang)) { // Japanese
-    const ampm = hours / 12 === 0 ? '午前' : '午後';
+    const ampm = (hours / 12 | 0) === 0 ? '午前' : '午後';
     const hoursName =
       use12Hours ? `${ampm}${hours % 12}時` : `${hours}時`
 
