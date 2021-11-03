@@ -55,7 +55,7 @@ async function setBadge(enabled) {
 }
 
 browser.runtime.onInstalled.addListener(async () => {
-  console.log('onInstalled');
+  console.log('runtime.onInstalled');
 
   // initialize local storage
   let config = await browser.storage.local.get();
@@ -67,7 +67,7 @@ browser.runtime.onInstalled.addListener(async () => {
 });
 
 browser.runtime.onStartup.addListener(async () => {
-  console.log('onStartup');
+  console.log('runtime.onStartup');
 
   let { enabled } = await browser.storage.local.get();
   await setBadge(enabled);
@@ -75,8 +75,23 @@ browser.runtime.onStartup.addListener(async () => {
   await setAlarm();
 });
 
+browser.runtime.onMessage.addListener(async msg => {
+  console.log(`runtime.onMessage: msg=${msg}`);
+
+  switch (msg) {
+    case 'setAlarm':
+      await setAlarm();
+      break;
+    case 'chime':
+      await chime();
+      break;
+    default:
+      throw new Error("assert not reached");
+  }
+});
+
 browser.alarms.onAlarm.addListener(async () => {
-  console.log('onAlarm');
+  console.log('alarms.onAlarm');
 
   const { enabled, silentWhenIdle } = await browser.storage.local.get();
 
@@ -90,25 +105,10 @@ browser.alarms.onAlarm.addListener(async () => {
   await setAlarm();
 });
 
-browser.runtime.onMessage.addListener(msg => {
-  console.log(`onMessage('${msg}')`);
-
-  switch (msg) {
-    case 'setAlarm':
-      setAlarm();
-      break;
-    case 'chime':
-      chime();
-      break;
-    default:
-      throw new Error("assert not reached");
-  }
-});
-
-browser.idle.onStateChanged.addListener(newState => {
+browser.idle.onStateChanged.addListener(async newState => {
   console.log(`idle.onStateChanged: newState=${newState}`);
 
-  if (newState === 'active') setAlarm();
+  if (newState === 'active') await setAlarm();
 });
 
 browser.browserAction.onClicked.addListener(async () => {
