@@ -1,5 +1,13 @@
 import speechText from './speechtext.mjs';
 
+const DEFAULT_CONFIG = {
+  enabled: true,
+  voiceName: '',
+  interval: 15,
+  use12Hours: false,
+  silentWhenIdle: false,
+};
+
 const IDLE_DETECTION_INTERVAL = 5 * 60; // secs
 
 async function chime() {
@@ -23,7 +31,7 @@ async function chime() {
 }
 
 async function setAlarm() {
-  browser.alarms.clear();
+  await browser.alarms.clear();
 
   let { interval } = await browser.storage.local.get(['interval']);
   if (!interval) interval = 15;
@@ -38,23 +46,31 @@ async function setAlarm() {
   browser.alarms.create({ when })
 }
 
+async function setBadge(enabled) {
+  const text = enabled ? 'ON' : 'OFF';
+  const color = enabled ? '#4984f4' : '#333333';
+
+  await browser.browserAction.setBadgeText({ text });
+  await browser.browserAction.setBadgeBackgroundColor({ color });
+}
+
 browser.runtime.onInstalled.addListener(async () => {
   console.log('onInstalled');
 
   // initialize local storage
-  let { voiceName } = await browser.storage.local.get();
-  if (voiceName === undefined)
-    await browser.storage.local.set({
-      voiceName: '',
-      interval: 15,
-      use12Hours: false,
-      silentWhenIdle: false,
-    });
+  let config = await browser.storage.local.get();
+  config = Object.assign(DEFAULT_CONFIG, config);
+  await browser.storage.local.set(config);
+  
+  await setBadge(config.enabled);
+  await setAlarm();
+});
 
-  // set badge
-  await browser.storage.local.set({ enabled: true });
-  await browser.browserAction.setBadgeText({ text: 'ON' });
-  await browser.browserAction.setBadgeBackgroundColor({ color: '#4984f4' })
+browser.runtime.onStartup.addListener(async () => {
+  console.log('onStartup');
+
+  let { enabled } = await browser.storage.local.get();
+  await setBadge(enabled);
 
   await setAlarm();
 });
@@ -71,7 +87,7 @@ browser.alarms.onAlarm.addListener(async () => {
     console.log(`Alarm skipped (enabled: ${enabled}, state: ${state})`);
   }
 
-  setAlarm();
+  await setAlarm();
 });
 
 browser.runtime.onMessage.addListener(msg => {
@@ -96,16 +112,11 @@ browser.idle.onStateChanged.addListener(newState => {
 });
 
 browser.browserAction.onClicked.addListener(async () => {
+  console.log('browserAction.onClicked');
+
   let { enabled } = await browser.storage.local.get();
-
-  if (enabled) {
-    await browser.browserAction.setBadgeText({ text: 'OFF' });
-    await browser.browserAction.setBadgeBackgroundColor({ color: '#333333' })
-  } else {
-    await browser.browserAction.setBadgeText({ text: 'ON' });
-    await browser.browserAction.setBadgeBackgroundColor({ color: '#4984f4' })
-  }
-
   enabled = !enabled;
   await browser.storage.local.set({ enabled });
+
+  await setBadge(enabled);
 });
