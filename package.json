@@ -1,11 +1,11 @@
 {
   "name": "chime",
   "version": "0.3.3",
-  "description": "Chime improves your time conciousness",
+  "description": "Chime improves your time consciousness",
   "main": "background.js",
   "scripts": {
-    "test": "mocha",
-    "package": "webpack && rm -f ext.zip; zip -r ext.zip *.js *.html manifest.json dist/background.js _locales icons/*.png node_modules/webextension-polyfill/dist/browser-polyfill.min.js*"
+    "start": "webpack",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/yuntan/chime#readme",
   "dependencies": {
-    "webextension-polyfill": "^0.6.0"
+    "copy-webpack-plugin": "^10.2.3",
+    "webextension-polyfill": "^0.6.0",
+    "zip-webpack-plugin": "^4.0.1"
   },
   "devDependencies": {
     "@types/firefox-webext-browser": "^70.0.1",
