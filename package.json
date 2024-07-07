@@ -1,31 +1,24 @@
 {
   "name": "chime",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Chime improves your time consciousness",
-  "main": "background.js",
+  "private": true,
   "scripts": {
-    "start": "webpack",
+    "pack": "zip -r chime.zip _locales icons/*.png src LICENSE manifest.json",
     "test": "mocha"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yuntan/chime.git"
   },
-  "author": "Yuto Tokunaga <yuntan.sub1@gmail.com>",
+  "author": "Yuto Tokunaga <contact@yuntan.tech>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/yuntan/chime/issues"
   },
   "homepage": "https://github.com/yuntan/chime#readme",
-  "dependencies": {
-    "copy-webpack-plugin": "^10.2.3",
-    "webextension-polyfill": "^0.6.0",
-    "zip-webpack-plugin": "^4.0.1",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^4.9.1"
-  },
   "devDependencies": {
-    "@types/firefox-webext-browser": "^70.0.1",
+    "@types/chrome": "^0.0.268",
     "mocha": "^9.2.0"
   }
 }

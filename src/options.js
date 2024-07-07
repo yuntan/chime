@@ -47,7 +47,7 @@ window.addEventListener('load', async () => {
 
   async function restoreOptions() {
     const { voiceName, interval, use12Hours, silentWhenIdle } =
-      await browser.storage.local.get();
+      await chrome.storage.local.get();
     if (voiceName === '') {
       voiceSelect.selectedIndex = 0;
     } else {
@@ -65,14 +65,14 @@ window.addEventListener('load', async () => {
       interval = intervals[intervalInput.value],
       use12Hours = use12Input.checked,
       silentWhenIdle = idleInput.checked;
-    await browser.storage.local.set({
+    await chrome.storage.local.set({
       voiceName, interval, use12Hours, silentWhenIdle,
     });
-    await browser.runtime.sendMessage('', 'setAlarm');
+    await chrome.runtime.sendMessage('', 'setAlarm');
   }
 
   function chime() {
-    browser.runtime.sendMessage('', 'chime');
+    chrome.runtime.sendMessage('', 'chime');
   }
 
   populateVoiceSelect();
