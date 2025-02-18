@@ -19,6 +19,6 @@
   "homepage": "https://github.com/yuntan/chime#readme",
   "devDependencies": {
     "@types/chrome": "^0.0.268",
-    "mocha": "^9.2.0"
+    "mocha": "^11.1.0"
   }
 }
