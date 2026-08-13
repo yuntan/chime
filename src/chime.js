@@ -1,9 +1,7 @@
 chrome.runtime.onMessage.addListener(async (message) => {
-  const { target, data } = message;
+  const { text, voiceName } = message.data || message;
 
-  if (target !== "offscreen-document") return;
-
-  const { text, voiceName } = data;
+  if (!text) return;
 
   const synth = window.speechSynthesis;
 
